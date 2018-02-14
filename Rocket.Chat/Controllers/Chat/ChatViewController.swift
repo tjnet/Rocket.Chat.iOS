@@ -1048,25 +1048,25 @@ extension ChatViewController {
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
 
         // save visible row position
-        indexPathBeforeRotation = collectionView?.indexPathsForVisibleItems.first
-        print("indexPath.row")
-        print(indexPathBeforeRotation?.row)
+        var indexPath = collectionView?.indexPathsForVisibleItems.first
 
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView?.layoutIfNeeded()
         }, completion: { _ in
             // Scroll the saved position prior to screen rotate
-            if let indexPath = self.indexPathBeforeRotation {
-                self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+            
+            print("\(UIDevice.current.orientation.isLandscape)")
+            if let indexPath = indexPath {
+                // TODO: ここ、orientationによって分ける?
+//                if(UIDevice.current.orientation.isLandscape) {
+//                    self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+//                } else {
+//                    self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+//                }
+                self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
             }
         })
     }
-    
-    
-    
-    
-    
-    
 }
 
 
