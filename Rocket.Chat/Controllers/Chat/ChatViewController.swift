@@ -1040,3 +1040,33 @@ extension ChatViewController {
         }
     }
 }
+
+// Rotation
+
+extension ChatViewController {
+    //https://stackoverflow.com/questions/13490065/keeping-the-contentoffset-in-a-uicollectionview-while-rotating-interface-orienta
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+
+        // save visible row position
+        indexPathBeforeRotation = collectionView?.indexPathsForVisibleItems.first
+        print("indexPath.row")
+        print(indexPathBeforeRotation?.row)
+
+        coordinator.animate(alongsideTransition: { _ in
+            self.collectionView?.layoutIfNeeded()
+        }, completion: { _ in
+            // Scroll the saved position prior to screen rotate
+            if let indexPath = self.indexPathBeforeRotation {
+                self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+            }
+        })
+    }
+    
+    
+    
+    
+    
+    
+}
+
+
