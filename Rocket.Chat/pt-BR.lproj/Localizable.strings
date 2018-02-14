@@ -1,19 +1,11 @@
-/* 
-  Localizable.strings
-  Rocket.Chat
-
-  Created by Rafael K. Streit on 8/27/16.
-  Copyright © 2016 Rocket.Chat. All rights reserved.
-*/
-
-
 // Global
 "global.ok" = "OK";
+"global.no" = "Não";
 "global.cancel" = "Cancelar";
 
 // Errors
-"error.socket.default_error_title" = "Oops!";
-"error.socket.default_error_message" = "Algo errado aconteceu, por favor tente novamente.";
+"error.socket.default_error.title" = "Oops!";
+"error.socket.default_error.message" = "Algo errado aconteceu, por favor tente novamente.";
 
 // Alerts
 "alert.connection.invalid_url.title" = "Oops!";
@@ -30,6 +22,9 @@
 
 "alert.feature.wip.title" = "Oops!";
 "alert.feature.wip.message" = "Desculpe, mas esta função ainda não está disponível.";
+
+"alert.insecure_image.title" = "URL insegura";
+"alert.insecure_image.message" = "A URL deste arquivo é insegura e por isto ele não foi carregado. Apenas arquivos com SSL são carregados no chat. Para abrir ele no navegador, clique no botão abaixo.";
 
 "alert.socket_error.invalid_user.title" = "Sessão expirada";
 "alert.socket_error.invalid_user.message" = "Esta sessão expirou. Por favor, logue-se novamente.";
@@ -49,6 +44,14 @@
 "alert.upload_error.title" = "Erro de Upload";
 "alert.upload_error.message" = "Algo de errado aconteceu ao fazer o upload do seu arquivo. Por favor, tente novamente.";
 
+"alert.upload_dialog.title" = "Enviar um arquivo";
+"alert.upload_dialog.placeholder.title" = "Título";
+"alert.upload_dialog.placeholder.description" = "Descrição";
+"alert.upload_dialog.action.upload" = "Enviar arquivo";
+
+"alert.email_verification.title" = "Verificação de email";
+"alert.email_verification.message" = "Nós enviamos um email para confirmar seu registro. Se você não receber um email em breve, por favor volte e tente novamente.";
+
 // Connection Redirect
 "connection.server.redirect.alert.title" = "Servidor mudou de URL";
 "connection.server.redirect.alert.message" = "Parece que este servidor mudou a URL para:\n\n%@\n\Gostaria de atualizar a URL?";
@@ -62,6 +65,10 @@
 "auth.connect.button_connect" = "Conectar";
 "auth.connect.ssl_required" = "É necessário que seu servidor suporte SSL";
 "auth.connect.connecting" = "Conectando no servidor";
+
+"auth.forgot_password.title" = "Esqueceu sua senha?";
+"auth.forgot_password.message" = "Digite seu e-mail";
+"auth.forgot_password.success" = "Se esse e-mail for registrado, nós enviaremos instruções de como resetar sua senha. Se você não receber um e-mail em breve, por favor volte e tente novamente.";
 
 // Subscriptions
 "subscriptions.search" = "Busca";
@@ -82,6 +89,7 @@
 "user_menu.away" = "Ausente";
 "user_menu.busy" = "Ocupado";
 "user_menu.invisible" = "Invisível";
+"user_menu.admin" = "Administração";
 "user_menu.settings" = "Minha conta";
 "user_menu.logout" = "Sair";
 
@@ -99,6 +107,9 @@
 "new_room.cell.channel_name.title" = "Nome do canal";
 "new_room.group.invite_users" = "Invite users";
 "new_room.cell.invite_users.placeholder" = "Usernames";
+
+// Notifications
+"notifications.action.reply" = "Reply";
 
 // Chat
 "chat.channel_preview_view.title" = "Esta é uma pré-visualização de #%@";
@@ -118,6 +129,11 @@
 "chat.message.actions.unpin" = "Remover pino da mensagem";
 "chat.message.actions.quote" = "Citar mensagem";
 "chat.message.actions.reply" = "Responder mensagem";
+"chat.message.actions.delete" = "Deletar mensagem";
+"chat.message.actions.delete.confirm.title" = "Deletar esta mensagem?";
+"chat.message.actions.delete.confirm.message" = "Tem certeza que deseja deletar esta mensagem? A mensagem não poderá ser recuperada.";
+"chat.message.actions.delete.confirm.yes" = "Sim, deletar";
+"Send" = "Enviar"; //SLKTextInputbar.m
 
 // Chat Message Report
 "chat.message.report.success.title" = "Mensagem reportada";
@@ -137,6 +153,7 @@
 
 // Chat Cell Static Messages
 "chat.message.open_file" = "Toque para abrir";
+"chat.message.open_browser" = "Abrir no Safari";
 
 // Message Types
 "chat.message.type.room_name_changed" = "Nome da sala alterou para: %@ por %@";

@@ -57,6 +57,7 @@ final class ChatViewController: SLKTextViewController {
     var dataController = ChatDataController()
 
     var searchResult: [(String, Any)] = []
+    var searchWord: String = ""
 
     var closeSidebarAfterSubscriptionUpdate = false
 
@@ -251,7 +252,7 @@ final class ChatViewController: SLKTextViewController {
         textView.registerMarkdownFormattingSymbol("```", withTitle: "Preformatted")
         textView.registerMarkdownFormattingSymbol(">", withTitle: "Quote")
 
-        registerPrefixes(forAutoCompletion: ["@", "#", "/"])
+        registerPrefixes(forAutoCompletion: ["@", "#", "/", ":"])
     }
 
     fileprivate func setupTitleView() {
@@ -303,6 +304,11 @@ final class ChatViewController: SLKTextViewController {
             nibName: "AutocompleteCell",
             bundle: Bundle.main
         ), forCellReuseIdentifier: AutocompleteCell.identifier)
+
+        autoCompletionView.register(UINib(
+            nibName: "EmojiAutocompleteCell",
+            bundle: Bundle.main
+        ), forCellReuseIdentifier: EmojiAutocompleteCell.identifier)
     }
 
     internal func scrollToBottom(_ animated: Bool = false) {
@@ -420,12 +426,22 @@ final class ChatViewController: SLKTextViewController {
 
     internal func subscribe(for subscription: Subscription) {
         MessageManager.changes(subscription)
+        MessageManager.subscribeDeleteMessage(subscription) { [weak self] msgId in
+            guard let collectionView = self?.collectionView else { return }
+
+            self?.dataController.delete(msgId: msgId)
+
+            collectionView.performBatchUpdates({
+                collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
+            })
+        }
         registerTypingEvent(subscription)
     }
 
     internal func unsubscribe(for subscription: Subscription) {
         SocketManager.unsubscribe(eventName: subscription.rid)
         SocketManager.unsubscribe(eventName: "\(subscription.rid)/typing")
+        SocketManager.unsubscribe(eventName: "\(subscription.rid)/deleteMessage")
     }
 
     internal func emptySubscriptionState() {
@@ -496,9 +512,10 @@ final class ChatViewController: SLKTextViewController {
 
     func registerTypingEvent(_ subscription: Subscription) {
         typingIndicatorView?.interval = 0
+        guard let user = AuthManager.currentUser() else { return Log.debug("Could not register TypingEvent") }
 
         SubscriptionManager.subscribeTypingEvent(subscription) { [weak self] username, flag in
-            guard let username = username else { return }
+            guard let username = username, username != user.username else { return }
 
             let isAtBottom = self?.chatLogIsAtBottom()
 
@@ -839,7 +856,7 @@ extension ChatViewController {
             return UICollectionViewCell()
         }
 
-        cell.labelTitle.text = obj.timestamp.formatted("MMM dd, YYYY")
+        cell.labelTitle.text = RCDateFormatter.date(obj.timestamp)
         return cell
     }
 
@@ -920,6 +937,8 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout {
             }
 
             if let message = obj.message {
+                guard !message.markedForDeletion else { return .zero }
+
                 let sequential = dataController.hasSequentialMessageAt(indexPath)
                 let height = ChatMessageCell.cellMediaHeightFor(message: message, width: fullWidth, sequential: sequential)
                 return CGSize(width: fullWidth, height: height)
@@ -954,11 +973,14 @@ extension ChatViewController: ChatPreviewModeViewProtocol {
         guard let auth = AuthManager.isAuthenticated() else { return }
         guard let subscription = self.subscription else { return }
 
-        Realm.execute({ _ in
+        Realm.executeOnMainThread({ realm in
             subscription.auth = auth
+            realm.add(subscription, update: true)
         })
 
         self.subscription = subscription
+
+        updateJoinedView()
     }
 
 }
