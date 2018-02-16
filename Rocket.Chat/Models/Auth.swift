@@ -40,7 +40,9 @@ final class Auth: Object {
 
     var user: User? {
         guard let userId = userId else { return nil }
-        return self.realm?.object(ofType: User.self, forPrimaryKey: userId)
+
+        let realm = self.realm ?? Realm.shared
+        return realm?.object(ofType: User.self, forPrimaryKey: userId)
     }
 
     // Subscriptions
@@ -93,6 +95,50 @@ extension Auth {
 
         if message.user != user { return .differentUser }
         if !settings.messageAllowDeleting { return .serverBlocked }
+
+        if timeElapsed() { return .timeElapsed }
+
+        return .allowed
+    }
+}
+
+extension Auth {
+    enum CanEditMessageResult {
+        case allowed
+        case timeElapsed
+        case differentUser
+        case serverBlocked
+        case notActionable
+        case unknown
+    }
+
+    func canEditMessage(_ message: Message) -> CanEditMessageResult {
+        guard
+            let createdAt = message.createdAt,
+            let user = user,
+            let settings = settings
+        else {
+            return .unknown
+        }
+
+        if !message.type.actionable {
+            return .notActionable
+        }
+
+        if user.hasPermission(.editMessage, realm: self.realm) {
+            return .allowed
+        }
+
+        func timeElapsed() -> Bool {
+            if settings.messageAllowEditingBlockEditInMinutes < 1 {
+                return false
+            }
+
+            return Date.serverDate.timeIntervalSince(createdAt)/60 > Double(settings.messageAllowDeletingBlockDeleteInMinutes)
+        }
+
+        if message.user != user { return .differentUser }
+        if !settings.messageAllowEditing { return .serverBlocked }
 
         if timeElapsed() { return .timeElapsed }
 
